@@ -276,12 +276,12 @@ def base_add_source(site_id, asset_id):
         return render_template('add_source.html', source_list=source_list)
 
 def handle_new_source(i_site_id: str, i_user_id: str, i_asset_id: str, i_vals: dict) -> tuple:
-    if not verify_exists(i_vals, ['name', 'location', 'type']):
+    if not verify_exists(i_vals, ['name', 'location', 'type', 'shutoff_ins', 'startup_ins', 'verif_ins']):
             return (False, render_template('new_source.html', message='Missing Parameter'))
     i_vals['locked'] = 0 if 'locked' not in i_vals else 1
     if 'magnitude' not in i_vals:
         i_vals['magnitude'] = ''
-    source_instance = Source.Source(i_site_id, i_user_id, i_vals['name'], i_vals['location'], i_vals['type'], i_vals['magnitude'], i_vals['locked'])
+    source_instance = Source.Source(i_site_id, i_user_id, i_vals['name'], i_vals['location'], i_vals['type'], i_vals['magnitude'], i_vals['locked'], i_vals['shutoff_ins'], i_vals['startup_ins'], i_vals['verif_ins'])
     Asset.add_source_to_asset(i_asset_id, source_instance.id)
     return (True, source_instance.id, i_vals['locked'])
 

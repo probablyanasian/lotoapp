@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+    <title>Site {{ name }}</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        {% if is_manager %}
+        <p>Key: {{ key }} </p><br>
+        <a href="view_users/" class="button">View Users</a><br>
+        {% endif %}
+        <a href="view_assets/" class="button">Assets</a><br>
+        <a href="view_incidents/" class="button">Incidents</a><br>
+        <a href="view_locked_sources/" class="button">Locked Sources</a><br>
+        <p style="color:red;">{{message}}</p> <br>
+        {% if is_manager %}
+            <form method="POST">
+                <input type="submit" value="Regen Key" name="action">
+            </form><br>
+            <form method="POST">
+                <input type="submit" value="Delete Site" name="action">
+            </form><br>
+        {% endif %}
+        <br><br><a href="../../view_sites">View Sites</a>
+    </div>
+</body>

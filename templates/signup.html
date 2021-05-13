@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="text" value="" placeholder="First Name" name="fname"><br>
+            <input type="text" value="" placeholder="Last Name" name="lname"><br>
+            <input type="text" value="" placeholder="Phone Number" name="phone"><br>
+            <input type="text" value="" placeholder="Email (optional)" name="email"><br>
+            <label for="share_contact">Share contact info with others: </label>
+            <input type="checkbox" id="share_contact" value="share" style="width: 5rem;" name="share_contact" checked><br>
+            <input type="text" value="" placeholder="Username" name="uname"><br>
+            <input type="password" value="" placeholder="Password" name="pass"><br>
+            <input type="password" value="" placeholder="Verify Password" name="verify_pass"><br>
+            <input type="submit" value="Submit"><br>
+        </form>
+        <p style="color:red;">{{message}}</p><br>
+        <a href="/login">Log In</a>
+    </div>
+</body>

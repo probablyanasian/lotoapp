@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+    <title>Source {{ source_info[0] }}</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>Name: {{ source_info[0] }}</p>
+        <p>Location: {{ source_info[1] }}</p>
+        <p>Type: {{ source_info[2] }}</p>
+        {% if source_info[3]|length > 0 %}
+            <p>Magnitude: {{ source_info[3] }}</p>
+        {% endif %}
+        {% if source_info[4] %}
+            <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
+            <br>
+            <form method="POST">
+                <input type="submit" value="unlock" name="toggle_lock">
+            </form>
+            <br>
+            {% for user in users_list %}
+                <a href='user/{{ user[0] }}/'>
+                {% if user[1] == 1 %}
+                ✓  
+                {% else %}
+                ✗  
+                {% endif %}{{ user[3] }} {{ user [4] }}</a><br>
+            {% endfor %}
+        {% else %}
+            <p style="display:inline">Status: </p><p style="color:red; display:inline;">Unlocked</p>
+            <br>
+            <form method="POST">
+                <input type="submit" value="lock" name="toggle_lock">
+            </form>
+            <br>
+        {% endif %}
+        {% if is_manager %}
+            <br>
+            <form method="POST">
+                <label style="color: red;">Removes from <em>ALL</em> assets</label><br>
+                <input type="submit" value="Delete Source" name="action">
+            </form>
+            <br>
+        {% endif %}
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../../view_locked_sources/">Back to Locked Sources</a>
+    </div>
+</body>

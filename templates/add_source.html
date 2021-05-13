@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+    <title>Add Source</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <a href="../new_source/" class="button">New Source</a><br>
+        {% for source in source_list %}
+            <form method="POST">
+                <input type="text" style="display:none;" value="{{ source[0] }}" name="id">
+                <input type="submit" value="{{ source[1] }} at: {{ source[3] }}">
+            </form><br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p><br>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>

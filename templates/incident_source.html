@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head>
+    <title>Source {{ source_info[0] }}</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>Name: {{ source_info[0] }}</p>
+        <p>Location: {{ source_info[1] }}</p>
+        <p>Type: {{ source_info[2] }}</p>
+        {% if source_info[3]|length > 0 %}
+            <p>Magnitude: {{ source_info[3] }}</p>
+        {% endif %}
+        {% if locked %}
+            <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
+            <br>
+            <form method="POST">
+                <input type="submit" value="unlock" name="toggle_lock">
+            </form>
+            <br>
+        {% else %}
+            <p style="display:inline">Status: </p><p style="color:red; display:inline;">Unlocked</p>
+            <br>
+            <form method="POST">
+                <input type="submit" value="lock" name="toggle_lock">
+            </form>
+            <br>
+        {% endif %}
+        <br><br>
+        <a href="view_files/">View Files</a><br>
+        <p style="color: red;">Due to data retention rules, images can <em><b>not</b></em> be deleted.<br>Make sure you upload the right one.</p>
+        <form method='POST' enctype='multipart/form-data'>
+            <input type=file name=file><br>
+            <input type=submit value=Upload>
+        </form>
+        {% if is_manager %}
+            <br>
+            <form method="POST">
+                <input type="submit" value="Remove Source from Asset" name="action">
+            </form>
+            <br>
+            <br>
+            <form method="POST">
+                <label style="color: red;">Removes from <em>ALL</em> assets</label><br>
+                <input type="submit" value="Delete Source" name="action">
+            </form>
+            <br>
+        {% endif %}
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../../">Back to Asset: {{ asset_name }}</a>
+    </div>
+</body>

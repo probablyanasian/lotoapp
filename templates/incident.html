@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+    <title>View Incident</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>Names</p>
+        <p>
+        {% for name in names %}
+            {{ name }}<br>
+        {% endfor %}
+        </p>
+        {% if is_leader and not is_resolved %} 
+        <br>
+            <form method="POST">
+                <input type="submit" value="Resolve Incident" name="action">
+            </form>
+        <br>
+        {% elif not is_resolved %}
+            {% if in_incident %}
+                <br>
+                    <form method="POST">
+                        <input type="submit" value="Leave Incident" name="action">
+                    </form>
+                <br>
+            {% else %}
+                <br>
+                    <form method="POST">
+                        <input type="submit" value="Join Incident" name="action">
+                    </form>
+                <br>
+            {% endif %}
+        {% else %}
+            <p style="color: red;">Incident is Resolved.</p>
+        {% endif %}
+        <br><br><a href="../../view_incidents/">Back to Incident List</a>
+    </div>
+    <div>
+        {% if not is_resolved %}
+        <a href="add_asset/" class="button">Add Asset</a><br><br>
+        {% endif %}
+        {% for asset in asset_list %}
+            <a href='{{ 'asset/'+asset[1]+'/' }}'> {{ asset[0] }} </a><br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p><br>
+    </div>
+</body>

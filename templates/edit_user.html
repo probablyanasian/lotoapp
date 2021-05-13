@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+    <title>Edit User</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="text" value="{{ user_info[0] }}" placeholder="First Name" name="fname"><br>
+            <input type="text" value="{{ user_info[1] }}" placeholder="Last Name" name="lname"><br>
+            <input type="text" value="{{ user_info[3] }}" placeholder="Phone Number" name="phone"><br>
+            <input type="text" value="{{ user_info[4] }}" placeholder="Email (optional)" name="email"><br>
+            <label for="share_contact">Share contact info with others: </label>
+            <input type="checkbox" id="share_contact" value="share" style="width: 5rem;" name="share_contact" 
+            {% if user_info[5] == 1 %}
+                checked
+            {% endif %}>
+            <br>
+            <input type="text" value="{{ user_info[2] }}" placeholder="Username" name="uname"><br>
+            <label>Verify Password:</label><br>
+            <input type="password" value="" placeholder="Password" name="pass"><br>
+            <input type="submit" value="Submit"><br>
+        </form>
+        <br>
+            <form method="POST">
+                <label style="color: red;">IRREVERSABLE CHANGE</label><br>
+                <input type="submit" value="Delete User" name="action">
+            </form>
+        <br>
+        <p style="color:red;">{{message}}</p><br>
+        <a href="/view_sites">Back to View Sites</a>
+    </div>
+</body>

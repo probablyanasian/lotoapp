@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<head>
+    <title>View Incidents</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <a href="../new_incident/" class="button">New Incident</a><br><br>
+        {% for item in data %}
+            <a href='{{ '../incident/'+item[0]+'/' }}'> {{ item[2] }} </a><br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p><br>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>

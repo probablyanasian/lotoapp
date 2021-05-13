@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+    <title>View Sites</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        {% for item in data %}
+            <a href='{{ '/site/'+item+'/' }}'> {{ data[item][0] + ' at: ' + data[item][1]}} </a><br>
+        {% endfor %}
+        <br><br>
+        <a href='/join_site'> Join Site </a><br>
+        <a href='/new_site'> Create Site </a><br><br>
+        <a href='/edit_user'> Edit User </a><br>
+        <p style="color:red;"> {{message}} </p>
+    </div>
+</body>

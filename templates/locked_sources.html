@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+    <title>Locked Sources</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>Site: {{ site_name }}</p>
+        <p>Location: {{ site_location }}</p>
+        {% if sources_list|length > 0 %}
+        {% for source in sources_list %}
+            <a href='{{ '../source/'+source[0]+'/' }}'> 
+                {{ source[1] }} at: {{ source[2] }}
+            </a><br>
+        {% endfor %}
+        {% else %}
+            <p>No Locked Sources</p><br>
+        {% endif %}
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../">Back to Site {{ site_name }}</a>
+    </div>
+</body>

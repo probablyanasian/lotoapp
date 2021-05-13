@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+    <title>{{ info[0] }} {{ info[1] }}</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>First Name: {{ info[0] }}</p>
+        <p>Last Name: {{ info[1] }}</p><br>
+        <p>ID: {{ user_id }}</p>
+        {% if info[5] or is_manager %}
+            <p>Phone Number: {{ info[3] }}</p>
+            {% if info[4]|length == 0 %}
+                <p>Email: None on file</p>
+            {% else %}
+                <p>Email: {{ info[4] }}</p><br>
+            {% endif %}
+        {% endif %}
+        {% if is_user_manager %}
+            <p>User is a manager of this site.</p>
+        {% else %}
+            <p>User is not a manager of this site.</p>
+        {% endif %}
+        {% if is_manager %}
+            <br>
+                <form method="POST">
+                    <input type="submit" value="Remove User" name="action">
+                </form>
+            <br>
+            {% if not is_user_manager %}
+                <br>
+                    <form method="POST">
+                        <label style="color: red;">THIS IS AN IRREVERSABLE CHANGE</label><br>
+                        <input type="submit" value="Make User Manager" name="action">
+                    </form>
+                <br>
+            {% endif %}
+        {% endif %}
+        <p style="color:red;">{{message}}</p><br>
+        <a href="../../">Back to Source</a>
+    </div>
+</body>

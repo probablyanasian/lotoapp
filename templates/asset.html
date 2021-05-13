@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head>
+    <title>Asset {{ name }}</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <p>Location: {{ location }}</p>
+        <a href='add_source/'>Add Source</a><br><br>
+        <p>Locked Checkmarks: Source</p>
+        {% for source in source_list %}
+            <a href='{{ 'source/'+source[0]+'/' }}'> 
+                {% if source[2] == 1 %}
+                ✓  
+                {% else %}
+                ✗  
+                {% endif %}
+                {{ source[1] }} at: {{ source[3] }}
+            </a><br>
+        {% endfor %}
+        {% if is_manager %}
+            <br>
+            <form method="POST">
+                <input type="submit" value="Delete Asset" name="action">
+            </form><br>
+        {% endif %}
+        <p style="color:red;">{{message}}</p>
+        {% if list_incidents %}
+            <br><br><a href="../../">Back to Site {{ name }}</a>
+        {% else %}
+            <br><br><a href="../../">Back to Incident</a>
+        {% endif %}
+    </div>
+    {% if list_incidents %}
+    {% if incident_list|length != 0 %}
+        <div>
+            <p>Incidents</p>
+            {% for item in incident_list %}
+                <a href='{{ '../../incident/'+item[0]+'/' }}'> {{ item[1] }} </a><br>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div>
+            <p> No Incidents </p><br>
+        </div>
+    {% endif %}
+    {% endif %}
+</body>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+    <title>Add Asset</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <a href="../new_asset/" class="button">New Asset</a><br>
+        {% for asset in asset_list %}
+            <form method="POST">
+                <input type="text" style="display:none;" value="{{ asset[0] }}" name="id">
+                <input type="submit" value="{{ asset[1] }}">
+            </form><br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p><br>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>

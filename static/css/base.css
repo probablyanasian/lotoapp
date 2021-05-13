@@ -15,6 +15,7 @@ form {
 }
 p{
     align-items: center;
+    white-space: pre-wrap;
 }
 input,textarea {
     margin:0.5rem;

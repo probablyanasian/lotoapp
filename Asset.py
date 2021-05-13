@@ -19,7 +19,7 @@ def regenKey(i_id: str) -> None:
     key = custom_utils.random_id(32)
     db_helper.execute("UPDATE assets SET key = :key WHERE id = :id;", {'id': i_id, 'key': key})
 
-def get_info_from_asset(i_asset_id: str) -> tuple:
+def get_info_from_id(i_asset_id: str) -> tuple:
     return db_helper.fetch('SELECT name, location FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})[0]
 
 # def insert_asset_to_incident(i_asset_id: str, i_incident_id: str, i_name: str) -> None:
@@ -28,7 +28,7 @@ def get_info_from_asset(i_asset_id: str) -> tuple:
 
 def get_assets_from_incident(i_incident_id: str) -> list:
     res = db_helper.fetch('SELECT asset_id FROM incidents_assets_join WHERE incident_id = :incident_id;', {'incident_id': i_incident_id})
-    ret = [(get_info_from_asset(tup[0])[0], tup[0]) for tup in res]
+    ret = [(get_info_from_id(tup[0])[0], tup[0]) for tup in res]
     retval = sorted(ret, key=lambda x: x[0])
     return retval
 

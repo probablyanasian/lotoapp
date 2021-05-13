@@ -5,12 +5,17 @@
 </head>
 <body>
     <div>
-        <p>Name: {{ source_info[0] }}</p>
-        <p>Location: {{ source_info[1] }}</p>
-        <p>Type: {{ source_info[2] }}</p>
+        <p>Name: {{ source_info[0] }}<br>
+        Location: {{ source_info[1] }}<br>
+        Type: {{ source_info[2] }}
         {% if source_info[3]|length > 0 %}
-            <p>Magnitude: {{ source_info[3] }}</p>
+            <br>Magnitude: {{ source_info[3] }}</p>
+        {% else %}
+            </p>
         {% endif %}
+        <a href='startup/'>Startup Instructions</a><br>
+        <a href='shutoff/'>Shutoff Instructions</a><br>
+        <a href='verification/'>Verification Instructions</a><br><br>
         {% if locked %}
             <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
             <br>
@@ -26,20 +31,12 @@
             </form>
             <br>
         {% endif %}
-        <br><br>
-        <a href="view_files/">View Files</a><br>
-        <p style="color: red;">Due to data retention rules, images can <em><b>not</b></em> be deleted.<br>Make sure you upload the right one.</p>
-        <form method='POST' enctype='multipart/form-data'>
-            <input type=file name=file><br>
-            <input type=submit value=Upload>
-        </form>
+        
         {% if is_manager %}
             <br>
             <form method="POST">
                 <input type="submit" value="Remove Source from Asset" name="action">
             </form>
-            <br>
-            <br>
             <form method="POST">
                 <label style="color: red;">Removes from <em>ALL</em> assets</label><br>
                 <input type="submit" value="Delete Source" name="action">
@@ -47,6 +44,15 @@
             <br>
         {% endif %}
         <p style="color:red;">{{message}}</p>
-        <br><br><a href="../../">Back to Asset: {{ asset_name }}</a>
+        <br><a href="../../">Back to Asset: {{ asset_name }}</a>
+    </div>
+    <div>
+        <p style="color: red;">Make sure you upload the right one.<br>Due to data retention, images can <em><b>not</b></em> be deleted.<br></p>
+        <form method='POST' enctype='multipart/form-data'>
+            <input type=file name=file><br>
+            <input type=submit value=Upload>
+        </form>
+        <br>
+        <a href="view_files/">View Files</a>
     </div>
 </body>

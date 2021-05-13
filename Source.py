@@ -20,7 +20,7 @@ def get_locked_sources_from_site(i_site_id: str):
     {'site_id': i_site_id})
 
 def get_info_from_id(i_source_id: str) -> list:
-    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id FROM sources WHERE id = :source_id;',
+    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id, shutoff_instructions, startup_instructions, verification_instructions FROM sources WHERE id = :source_id;',
     {'source_id': i_source_id})
 
 def get_sources_from_asset(i_asset_id: str) -> list:

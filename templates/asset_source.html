@@ -11,6 +11,11 @@
         {% if source_info[3]|length > 0 %}
             <p>Magnitude: {{ source_info[3] }}</p>
         {% endif %}
+        {% if source_info[11] == 1 %}
+            <p>Private Source</p>
+        {% else %}
+            <p>Public Source</p>
+        {% endif %}
         <p>Creation Time: {{ creation_time }}</p>
         <p>Last Updated: {{ last_updated }}</p>
         <br>

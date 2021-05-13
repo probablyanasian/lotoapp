@@ -17,7 +17,11 @@
             <label>Verification Instructions:</label><br>
             <textarea type="text" class="text" placeholder="Verification Instructions" name="verif_ins">{{ data[8] }}</textarea><br>
             <label for="private">Private: </label>
-            <input type="checkbox" value="private" style="width: 5rem;" placeholder="private" name="private"><br>
+            <input type="checkbox" value="private" style="width: 5rem;" placeholder="private" name="private"
+            {% if data[11] == 1 %}
+            checked
+            {% endif %}
+            ><br>
             <input type="submit" value="Submit"><br>
         </form>
         <p style="color:red;">{{message}}</p>

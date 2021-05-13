@@ -45,6 +45,12 @@ def login():
         resp.set_cookie('token', '', expires=0)
         return resp
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    resp = make_response(redirect(url_for('login')))
+    resp.set_cookie('token', '', expires=0)
+    return resp
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -279,12 +285,12 @@ def base_add_source(site_id, asset_id):
 def handle_new_source(i_site_id: str, i_user_id: str, i_asset_id: str, i_vals: dict) -> tuple:
     if not verify_exists(i_vals, ['name', 'location', 'type', 'shutoff_ins', 'startup_ins', 'verif_ins']):
             return (False, render_template('new_source.html', message='Missing Parameter'))
-    i_vals['locked'] = 0 if 'locked' not in i_vals else 1
+    i_vals['private'] = 0 if 'private' not in i_vals else 1
     if 'magnitude' not in i_vals:
         i_vals['magnitude'] = ''
-    source_instance = Source.Source(i_site_id, i_user_id, i_vals['name'], i_vals['location'], i_vals['type'], i_vals['magnitude'], i_vals['locked'], i_vals['shutoff_ins'], i_vals['startup_ins'], i_vals['verif_ins'])
+    source_instance = Source.Source(i_site_id, i_user_id, i_vals['name'], i_vals['location'], i_vals['type'], i_vals['magnitude'], i_vals['private'], i_vals['shutoff_ins'], i_vals['startup_ins'], i_vals['verif_ins'])
     Asset.add_source_to_asset(i_asset_id, source_instance.id)
-    return (True, source_instance.id, i_vals['locked'])
+    return (True, source_instance.id, i_vals['private'])
 
 @app.route('/site/<site_id>/asset/<asset_id>/new_source/', methods=['GET', 'POST'], strict_slashes=False)
 def base_new_source(site_id, asset_id):
@@ -618,7 +624,7 @@ def base_source(site_id, source_id):
     users_list = list(users_list for users_list,_ in itertools.groupby(users_list))
     return render_template('source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
-@app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/source/<source_id>/file/<file_id>', methods=['GET'], strict_slashes=False)
+@app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/source/<source_id>/file/<file_id>/', methods=['GET'], strict_slashes=False)
 def view_file(site_id, incident_id, asset_id, source_id, file_id):
     verify = User.validate_token(request.cookies.get('token'))
     if not verify[0]:
@@ -633,7 +639,7 @@ def view_file(site_id, incident_id, asset_id, source_id, file_id):
     tstring = time.ctime(unix_time)
     source_name = Source.get_info_from_id(source_id)[0][0]
     fpath_filt = fpath.replace('.', '')
-    return render_template('image.html', user_image=fpath_filt, time_string=tstring, source_name=source_name)
+    return render_template('image.html', user_image=fpath_filt, time_string=tstring, source_name=source_name, fileid=file_id)
 
 @app.route('/uploads/<site_id>/<incident_id>/<asset_id>/<source_id>/<file_id>/', strict_slashes=False)
 def serve_file(site_id, incident_id, asset_id, source_id, file_id):
@@ -860,10 +866,11 @@ def edit_source(site_id, filepath, source_id):
             return render_template('edit_source.html', data=source_info, message='Missing Parameter')
         if 'magnitude' not in vals:
             vals['magnitude'] = ''
-        Source.update_by_id(source_id, vals['name'], vals['location'], vals['type'], vals['magnitude'], vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
+        vals['private'] = 0 if 'private' not in vals else 1
+        Source.update_by_id(source_id, vals['name'], vals['location'], vals['type'], vals['magnitude'], vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'], vals['private'])
         request.url.replace('edit_source/', '').replace('edit_source', '')
 
-    source_info = Source.get_info_from_id(source_id)
+    source_info = Source.get_info_from_id(source_id)[0]
     return render_template('edit_source.html', data=source_info)
 
 @app.route('/site/<site_id>/view_no_file_list/', methods=['GET'], strict_slashes=False)

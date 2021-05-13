@@ -10,6 +10,9 @@
             Occured with Asset: <a href="../asset/{{ item[2][0] }}/">{{ item[2][1] }}</a> and Source: <a href="../source/{{ item[3][0] }}/">{{ item[3][1] }}</a>. Direct Link: <a href="../incident/{{ item[1][0] }}/asset/{{ item[2][0] }}/source/{{ item[3][0] }}/">Here</a>.
             <br>
         {% endfor %}
+        {% if no_file_list|length == 0 %}
+            <p style="color: green">All Incident Sources have Files.</p>
+        {% endif %}
         <p style="color:red;">{{message}}</p>
         <br><br><a href="../">Back</a>
     </div>

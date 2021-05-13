@@ -7,18 +7,18 @@ import db_helper
 import custom_utils
 
 class Source:
-    def __init__(self, i_site: str, i_user_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_locked: int, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
+    def __init__(self, i_site: str, i_user_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_private: int, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
         self.id = custom_utils.random_id(32)
 
-        db_helper.execute('INSERT INTO sources (id, site_id, creator_id, name, location, type, magnitude, locked, archived, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time)' +
-        'VALUES (:id, :site_id, :creator_id, :name, :location, :type, :magnitude, :locked, :archived, :shutoff_instructions, :startup_instructions, :verification_instructions, :creation_time, :last_updated_time);', 
-        {'id': self.id, 'site_id': i_site, 'creator_id': i_user_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'locked': i_locked, 'archived': 0,
+        db_helper.execute('INSERT INTO sources (id, site_id, creator_id, name, location, type, magnitude, locked, private, archived, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time)' +
+        'VALUES (:id, :site_id, :creator_id, :name, :location, :type, :magnitude, :locked, :private, :archived, :shutoff_instructions, :startup_instructions, :verification_instructions, :creation_time, :last_updated_time);', 
+        {'id': self.id, 'site_id': i_site, 'creator_id': i_user_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'locked': 0, 'archived': 0, 'private': i_private,
         'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time())})
 
-def update_by_id(i_source_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
-    db_helper.execute('UPDATE sources SET name = :name, location = :location, type = :type, magnitude = :magnitude, shutoff_instructions = :shutoff_instructions, ' + 
-    'startup_instruction = :startup_instructions, verification_instructions = :verification_instructions, last_updated_time = :last_updated_time WHERE id = :source_id',
-    {'source_id': i_source_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'shutoff_instructions': i_shutoff_ins,
+def update_by_id(i_source_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str, i_private: str) -> None:
+    db_helper.execute('UPDATE sources SET name = :name, location = :location, type = :type, magnitude = :magnitude, private = :private, shutoff_instructions = :shutoff_instructions, ' + 
+    'startup_instructions = :startup_instructions, verification_instructions = :verification_instructions, last_updated_time = :last_updated_time WHERE id = :source_id',
+    {'source_id': i_source_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'private': i_private, 'shutoff_instructions': i_shutoff_ins,
     'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'last_updated_time': int(time.time())})
 
 def get_locked_sources_from_site(i_site_id: str):
@@ -26,7 +26,7 @@ def get_locked_sources_from_site(i_site_id: str):
     {'site_id': i_site_id})
 
 def get_info_from_id(i_source_id: str) -> list:
-    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time FROM sources WHERE id = :source_id;',
+    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time, private FROM sources WHERE id = :source_id;',
     {'source_id': i_source_id})
 
 def get_sources_from_asset(i_asset_id: str) -> list:
@@ -170,8 +170,18 @@ def get_info_from_asset_incident(i_user_id: str, i_incident_id: str, i_asset_id:
 def get_info_from_site(i_site_id: str) -> list:
     return db_helper.fetch('SELECT id, name, locked, location, type, magnitude FROM sources WHERE site_id = :site_id;', {'site_id': i_site_id})
 
+def get_num_joins(i_source_id: str) -> list:
+    res = db_helper.fetch('SELECT asset_id FROM sources_assets_join WHERE source_id = :source_id;', 
+    {'source_id': i_source_id})
+    return len(res)
+
+def get_info_from_site_restrict_private(i_site_id: str) -> list:
+    res = db_helper.fetch('SELECT id, name, locked, location, type, magnitude, private FROM sources WHERE site_id = :site_id;',
+    {'site_id': i_site_id})
+    return [filt for filt in res if filt[6] == 0 or get_num_joins(filt[0]) == 0]
+
 def get_source_from_site_not_match_asset(i_site_id: str, i_asset_id: str) -> list:
-    resOne = get_info_from_site(i_site_id)
+    resOne = get_info_from_site_restrict_private(i_site_id)
     resTwo = db_helper.fetch('SELECT source_id FROM sources_assets_join WHERE asset_id = :asset_id;', {'asset_id': i_asset_id})
     resTwoFilt = [filt[0] for filt in resTwo]
     return [filt for filt in resOne if filt[0] not in resTwoFilt]

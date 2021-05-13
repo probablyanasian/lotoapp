@@ -4,7 +4,7 @@
 
 Application written in Python, Flask, SQL, JS, bare HTML and CSS.
 
-This application was written for the S4CA competition and comes with *no guarantee of support*.
+This application was written for the S4CA competition in a very short timeframe and thus comes with *no guarantee of support*.
 
 Use at your own discretion. Unknown bugs and security flaws may exist, as with any other project.
 

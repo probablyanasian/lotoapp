@@ -59,10 +59,10 @@ def delete_site(i_site_id: str, i_user_id: str) -> None:
         {'time': int(time.time()), 'del_uid': i_user_id, 'site_id': i_site_id})
         db_helper.execute('DELETE FROM sources WHERE site_id = :site_id;', {'site_id': i_site_id})
         db_helper.execute('INSERT INTO assets_deleted (id, key, creator_id, site_id, name, location, archived, '
-        + 'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, '
+        + 'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, '
         + 'deletion_time, deletion_user_id)' +
         f'SELECT id, key, creator_id, :site_id, name, location, archived, ' + 
-        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, ' + 
+        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, ' + 
         ':time, :del_uid FROM assets WHERE site_id = :site_id;',
         {'time': int(time.time()), 'del_uid': i_user_id, 'site_id': i_site_id})
         db_helper.execute('DELETE FROM assets WHERE site_id = :site_id;', {'site_id': i_site_id})

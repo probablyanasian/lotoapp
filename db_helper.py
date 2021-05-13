@@ -150,6 +150,7 @@ def setup_db() -> None:
         startup_instructions TEXT NOT NULL,
         creation_time INTEGER NOT NULL,
         last_updated_time INTEGER NOT NULL,
+        verification_instructions TEXT NOT NULL,
         FOREIGN KEY (site_id) REFERENCES sites(id)
         );
     """)

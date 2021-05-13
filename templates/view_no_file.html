@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+    <title>View No File List</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        {% for item in no_file_list %}
+            <a href='user/{{ item[0][0] }}/'>{{ item[0][1] }} {{ item[0][2] }}</a> at Incident: <a href="../incident/{{ item[1][0] }}/">{{ item[1][1] }}</a>, which occured at time: <b>{{ item[1][5] }}</b>.
+            Occured with Asset: <a href="../asset/{{ item[2][0] }}/">{{ item[2][1] }}</a> and Source: <a href="../source/{{ item[3][0] }}/">{{ item[3][1] }}</a>. Direct Link: <a href="../incident/{{ item[1][0] }}/asset/{{ item[2][0] }}/source/{{ item[3][0] }}/">Here</a>.
+            <br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>

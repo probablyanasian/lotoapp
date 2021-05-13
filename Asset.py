@@ -39,6 +39,9 @@ def get_assets_from_incident(i_incident_id: str) -> list:
     retval = sorted(ret, key=lambda x: x[0])
     return retval
 
+def get_assets_id_from_incident(i_incident_id: str) -> list:
+    return db_helper.fetch('SELECT asset_id FROM incidents_assets_join WHERE incident_id = :incident_id;', {'incident_id': i_incident_id})
+
 def get_assets_from_site(i_site_id: str) -> list:
     res = db_helper.fetch('SELECT id, name, location FROM assets WHERE site_id = :site_id;', {'site_id': i_site_id})
     return res

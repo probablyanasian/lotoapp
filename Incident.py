@@ -1,3 +1,4 @@
+from Asset import get_assets_from_incident
 import time
 import Source
 import db_helper
@@ -17,6 +18,10 @@ def regenKey(i_id: str) -> None:
     key = custom_utils.random_id(32)
     db_helper.execute("UPDATE incidents SET key = :key WHERE id = :id;", {'id': i_id})
 
+def get_info_from_id(i_incident_id: str) -> list: 
+    return db_helper.fetch('SELECT reason, l_date, resolved, creator_id FROM incidents WHERE id = :incident_id;',
+    {'incident_id': i_incident_id})
+
 def get_incidents_from_site(i_site_id: str) -> list:
     res = db_helper.fetch('SELECT id, l_date, reason FROM incidents WHERE site_id = :site_id;', {'site_id': i_site_id})
     retval = sorted(res, key=lambda x: x[1], reverse=True)
@@ -35,6 +40,11 @@ def resolve(i_incident_id: str) -> None:
     {'incident_id': i_incident_id, 'resolved': 1})
     db_helper.execute('UPDATE users_incidents_sources_join SET locked = :locked, final_unlock_time = :cur_time WHERE incident_id = :incident_id',
             {'incident_id': i_incident_id, 'cur_time': int(time.time()), 'locked': 0})
+    asset_tup_list = get_assets_from_incident(i_incident_id)
+    for asset_tup in asset_tup_list:
+        source_tup_list = Source.get_sources_from_asset(asset_tup[0])
+        for source_tup in source_tup_list:
+            Source.update_locked(source_tup[0])
 
 def is_resolved(i_incident_id: str) -> bool:
     res = db_helper.fetch('SELECT resolved FROM incidents WHERE id = :incident_id;',

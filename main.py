@@ -1,6 +1,7 @@
 import os
 import time
 import datetime
+import itertools
 import Site
 import User
 import Incident
@@ -143,13 +144,10 @@ def edit_user():
         share_contact = 1 if 'share_contact' in vals else 0
         if not User.verify_password_by_id(verify[1], vals['pass']):
             return render_template('edit_user.html', user_info=user_info, message='Invalid Password')
-        print("printing")
-        print(vals)
         User.update_user(verify[1], vals['fname'], vals['lname'], vals['uname'], vals['phone'], vals['email'], share_contact)
         return redirect(request.url)
     else:
         user_info = User.get_info_from_id(verify[1])[0]
-        print(user_info)
         return render_template('edit_user.html', user_info=user_info)
 
 @app.route('/site/<site_id>/', methods=['GET', 'POST'])
@@ -247,7 +245,6 @@ def base_new_asset(site_id):
 
     if request.method == 'POST':
         vals = request.form.to_dict()
-        print(vals)
         if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
             Asset.Asset(verify[1], site_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
             vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
@@ -369,12 +366,13 @@ def view_incident(site_id, incident_id):
                     Incident.resolve(incident_id)
                     return redirect(request.url)
     else:
+        incident_info = Incident.get_info_from_id(incident_id)[0]
         asset_list = Asset.get_assets_from_incident(incident_id)
         name_list = User.get_users_names_from_incident(incident_id)
         user_in = Incident.in_incident(verify[1], incident_id)
         is_leader = Incident.check_is_leader(verify[1], incident_id)
         is_resolved = Incident.is_resolved(incident_id)
-        return render_template('incident.html', asset_list=asset_list, names=name_list, in_incident=user_in, is_leader=is_leader, is_resolved=is_resolved)
+        return render_template('incident.html', name=incident_info[0], asset_list=asset_list, names=name_list, in_incident=user_in, is_leader=is_leader, is_resolved=is_resolved)
 
 @app.route('/site/<site_id>/incident/<incident_id>/add_asset/', methods=['GET', 'POST'])
 def add_asset(site_id, incident_id):
@@ -395,7 +393,6 @@ def add_asset(site_id, incident_id):
         if verify_exists(vals, ['id']):
             Incident.add_asset_to_incident(vals['id'], incident_id)
             user_list = User.get_users_from_incident(incident_id)
-            print(user_list)
             Source.insert_user_to_incident_source_from_incident(verify[1], incident_id)
             return redirect(url_for('view_incident', site_id=site_id, incident_id=incident_id))
         else:
@@ -444,7 +441,6 @@ def view_asset(site_id, incident_id, asset_id):
     if request.method == 'POST':
         if Site.check_site_manager(verify[1], site_id):
             vals = request.form.to_dict()
-            print(vals)
             if verify_exists(vals, ['action']):
                 if vals['action'] == 'Delete Asset':
                     Asset.delete_asset(verify[1], asset_id)
@@ -618,6 +614,8 @@ def base_source(site_id, source_id):
     is_manager = Site.check_site_manager(verify[1], site_id)
     site_name = Site.get_info_from_id(source_info[5])[0]
     users_list = Source.get_users_status_from_source_ignore_resolved(source_id)
+    users_list.sort()
+    users_list = list(users_list for users_list,_ in itertools.groupby(users_list))
     return render_template('source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/source/<source_id>/file/<file_id>', methods=['GET'], strict_slashes=False)
@@ -867,6 +865,32 @@ def edit_source(site_id, filepath, source_id):
 
     source_info = Source.get_info_from_id(source_id)
     return render_template('edit_source.html', data=source_info)
+
+@app.route('/site/<site_id>/view_no_file_list/', methods=['GET'], strict_slashes=False)
+def view_no_file_list(site_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return redirect(url_for('view_sites'))
+
+    no_file_list = File.incident_source_with_no_file(site_id)
+    processed_list = []
+    for no_file in no_file_list:
+        print(no_file)
+        user_info = (no_file[0], *User.get_info_from_id(no_file[0])[0])
+        incident_info = (no_file[1], *Incident.get_info_from_id(no_file[1])[0])
+        incident_info = (*incident_info, time.ctime(incident_info[2]))
+        asset_info = (no_file[2], *Asset.get_info_from_id(no_file[2]))
+        source_info = (no_file[3], *Source.get_info_from_id(no_file[3])[0])
+        processed_list.append((user_info, incident_info, asset_info, source_info))
+
+    processed_list.sort(key=lambda x: x[1][2], reverse=True)
+        
+    return render_template('view_no_file.html', no_file_list=processed_list)
 
 @app.route('/css/<path:path>')
 def send_css(path):

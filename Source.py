@@ -62,15 +62,12 @@ def get_users_status_from_source(i_source_id: str) -> list:
 
 def get_users_status_from_source_ignore_resolved(i_source_id: str) -> list:
     info_tup_list = get_users_status_from_source(i_source_id)
-    verif_dict = {}
-    for info_tup in info_tup_list:
-        verif_dict[info_tup[2]] = Incident.is_resolved(info_tup[2])
     temp_pack = []
     for user_tup in info_tup_list:
-        user_info = User.get_info_from_id(user_tup[0]) 
-        temp_pack.append([*user_tup, *user_info[0]])
-    retval = [valid for valid in temp_pack if not verif_dict[valid[2]]]
-    return retval
+        if not Incident.is_resolved(user_tup[2]):
+            user_info = User.get_info_from_id(user_tup[0]) 
+            temp_pack.append([*user_tup, *user_info[0]])
+    return temp_pack
 
 def get_users_info_from_source(i_source_id: str) -> list:
     user_tup_list = get_users_status_from_source(i_source_id)
@@ -78,7 +75,7 @@ def get_users_info_from_source(i_source_id: str) -> list:
     for user_tup in user_tup_list:
         user_info = User.get_info_from_id(user_tup[0]) 
         retval.append([*user_tup, *user_info[0]])
-    return retval
+    return list(set(retval)) # cheap tactic out
 
 def get_users_status_from_incident_source(i_incident_id: str, i_source_id: str) -> list:
     return db_helper.fetch('SELECT user_id, locked FROM users_incidents_sources_join WHERE source_id = :source_id AND incident_id = :incident_id',
@@ -144,9 +141,6 @@ def delete_source(i_source_id: str, i_user_id: str) -> None:
         'shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time, :time, :del_uid FROM sources WHERE id = :source_id;',
     {'time': int(time.time()), 'del_uid': i_user_id, 'source_id': i_source_id})
     db_helper.execute('DELETE FROM sources WHERE id = :source_id;', {'source_id': i_source_id})
-
-def get_sources_from_asset(i_asset_id: str) -> list:
-    return db_helper.fetch('SELECT source_id FROM sources_assets_join WHERE asset_id = :asset_id;', {'asset_id': i_asset_id})
 
 def get_info_from_asset(i_asset_id: str) -> list:
     source_list = get_sources_from_asset(i_asset_id)

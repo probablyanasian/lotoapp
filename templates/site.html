@@ -13,8 +13,9 @@
         
         <a href="view_users/" class="button">View Users</a><br>
         <a href="view_locked_sources/" class="button">Locked Sources</a><br>
-        <p style="color:red;">{{message}}</p> <br>
+        <p style="color:red;">{{message}}</p><br>
         {% if is_manager %}
+        <a href="view_no_file_list/">View No File List</a><br>
             <form method="POST">
                 <input type="submit" value="Regen Key" name="action">
             </form><br>

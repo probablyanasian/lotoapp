@@ -244,8 +244,9 @@ def base_new_asset(site_id):
 
     if request.method == 'POST':
         vals = request.form.to_dict()
-        if verify_exists(vals, ['name', 'location']):
-            Asset.Asset(verify[1], site_id, vals['name'], vals['location'])
+        if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
+            Asset.Asset(verify[1], site_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
+            vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
             return redirect(url_for('view_assets', site_id=site_id))
         else:
             return render_template('new_asset.html', message='Missing Parameter')
@@ -415,8 +416,9 @@ def new_asset(site_id, incident_id):
 
     if request.method == 'POST':
         vals = request.form.to_dict()
-        if verify_exists(vals, ['name', 'location']):
-            asset_instance = Asset.Asset(verify[1], site_id, vals['name'], vals['location'])
+        if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
+            asset_instance = Asset.Asset(verify[1], site_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
+            vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
             Incident.add_asset_to_incident(asset_instance.id, incident_id)
             return redirect(url_for('view_incident', site_id=site_id, incident_id=incident_id))
         else:

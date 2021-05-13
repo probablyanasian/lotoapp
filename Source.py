@@ -7,11 +7,13 @@ import db_helper
 import custom_utils
 
 class Source:
-    def __init__(self, i_site: str, i_user_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_locked: int) -> None:
+    def __init__(self, i_site: str, i_user_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_locked: int, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
         self.id = custom_utils.random_id(32)
 
-        db_helper.execute('INSERT INTO sources (id, site_id, creator_id, name, location, type, magnitude, locked, archived) VALUES (:id, :site_id, :creator_id, :name, :location, :type, :magnitude, :locked, :archived);', 
-        {'id': self.id, 'site_id': i_site, 'creator_id': i_user_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'locked': i_locked, 'archived': 0})
+        db_helper.execute('INSERT INTO sources (id, site_id, creator_id, name, location, type, magnitude, locked, archived, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time)' +
+        'VALUES (:id, :site_id, :creator_id, :name, :location, :type, :magnitude, :locked, :archived, :shutoff_instructions, :startup_instructions, :verification_instructions, :creation_time, :last_updated_time);', 
+        {'id': self.id, 'site_id': i_site, 'creator_id': i_user_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'locked': i_locked, 'archived': 0,
+        'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time())})
 
 def get_locked_sources_from_site(i_site_id: str):
     return db_helper.fetch('SELECT id, name, location FROM sources WHERE site_id = :site_id AND locked = 1;',

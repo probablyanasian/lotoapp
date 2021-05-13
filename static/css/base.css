@@ -6,14 +6,18 @@ html, body {
     background-color: #f2f2f2;
 }
 form {
-    display: inline-block;
+    /* display: inline-block; */
     vertical-align: middle;
     align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
 }
 p{
     align-items: center;
 }
-input {
+input,textarea {
     margin:0.5rem;
     width:15rem;
 }
@@ -22,4 +26,8 @@ div {
     padding:0.25rem;
     justify-content: center;
     text-align: center;
+}
+a {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }

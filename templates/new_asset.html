@@ -5,14 +5,17 @@
 </head>
 <body>
     <div>
+        <p></p>
         <form method="post">
             <input type="text" value="" placeholder="Name" name="name"><br>
             <input type="text" class="text" placeholder="Manufacturer" name="manu"><br>
             <input type="text" class="text" placeholder="Model Number" name="model_num"><br>
             <input type="text" class="text" placeholder="Serial Number" name="serial_num"><br>
-            <input type="text" value="" placeholder="Location" name="location"><br>
-            <input type="text" class="text" placeholder="Shutoff Instructions" name="shutoff_ins"><br>
-            <input type="text" class="text" placeholder="Startup Instructions" name="startup_ins"><br>
+            <input type="text" value="" placeholder="Location" name="location"><br><br>
+            <label style='color: red;'>Be specific. Instructions should also be written/copied into the sources.</label><br>
+            <textarea type="text" class="text" placeholder="Shutoff Instructions" name="shutoff_ins"></textarea><br>
+            <textarea type="text" class="text" placeholder="Startup Instructions" name="startup_ins"></textarea><br>
+            <textarea type="text" class="text" placeholder="Verification Instructions" name="verif_ins"></textarea><br>
             <input type="submit" value="Submit"><br>
         </form>
         <p style="color:red;">{{message}}</p>
@@ -20,47 +23,15 @@
     </div>
 </body>
 
-
-<style type="text/css">
-    textarea {
-        overflow: hidden;
-        resize: none;
-    }
-</style>
 <script type="text/javascript">
-var observe;
-if (window.attachEvent) {
-    observe = function (element, event, handler) {
-        element.attachEvent('on'+event, handler);
-    };
-}
-else {
-    observe = function (element, event, handler) {
-        element.addEventListener(event, handler, false);
-    };
-}
-function init () {
-    var texts = document.getElementsByClassName('text');
-    function resize () {
-        text.style.height = 'auto';
-        text.style.height = text.scrollHeight+'px';
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+    tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+    tx[i].addEventListener("input", OnInput, false);
     }
-    /* 0-timeout to get the already changed text */
-    function delayedResize () {
-        window.setTimeout(resize, 0);
-    }
-    
-    for (var i = 0; i < texts.length; i++) {
-        let text = texts.item(i);
-        observe(text, 'change',  resize);
-        observe(text, 'cut',     delayedResize);
-        observe(text, 'paste',   delayedResize);
-        observe(text, 'drop',    delayedResize);
-        observe(text, 'keydown', delayedResize);
 
-        text.focus();
-        text.select();
-        resize();
-    };
-}
+    function OnInput() {
+    this.style.height = "auto";
+    this.style.height = (this.scrollHeight) + "px";
+    }
 </script>

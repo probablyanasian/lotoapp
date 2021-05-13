@@ -131,9 +131,9 @@ def delete_source(i_source_id: str, i_user_id: str) -> None:
     for asset_tup in asset_tup_list:
         remove_source_from_asset(i_source_id, asset_tup[0], i_user_id)
     db_helper.execute('INSERT INTO sources_deleted (id, site_id, creator_id, name, location, type, magnitude, locked, archived, ' +
-        'shutoff_instructions, startup_instructions, verification_instructions, deletion_time, deletion_user_id)' +
+        'shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time, deletion_time, deletion_user_id)' +
         f'SELECT id, site_id, creator_id, name, location, type, magnitude, locked, archived, ' + 
-        'shutoff_instructions, startup_instructions, verification_instructions, :time, :del_uid FROM sources WHERE id = :source_id;',
+        'shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time, :time, :del_uid FROM sources WHERE id = :source_id;',
     {'time': int(time.time()), 'del_uid': i_user_id, 'source_id': i_source_id})
     db_helper.execute('DELETE FROM sources WHERE id = :source_id;', {'source_id': i_source_id})
 

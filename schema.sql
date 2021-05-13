@@ -72,6 +72,14 @@ CREATE TABLE assets (
         name TEXT NOT NULL,
         location TEXT NOT NULL,
         archived INTEGER NOT NULL,
+        manufacturer TEXT NOT NULL, 
+        model_number TEXT NOT NULL,
+        serial_number TEXT NOT NULL,
+        shutoff_instructions TEXT NOT NULL,
+        startup_instructions TEXT NOT NULL,
+        creation_time INTEGER NOT NULL,
+        last_updated_time INTEGER NOT NULL,
+        verification_instructions TEXT NOT NULL,
         FOREIGN KEY (site_id) REFERENCES sites(id)
         );
 CREATE TABLE sources (
@@ -84,6 +92,11 @@ CREATE TABLE sources (
         magnitude TEXT,
         locked INTEGER NOT NULL,
         archived INTEGER NOT NULL,
+        shutoff_instructions TEXT NOT NULL,
+        startup_instructions TEXT NOT NULL,
+        verification_instructions TEXT NOT NULL,
+        creation_time INTEGER NOT NULL,
+        last_updated_time INTEGER NOT NULL,
         FOREIGN KEY (site_id) REFERENCES sites(id)
         );
 CREATE TABLE users_incidents_sources_join (
@@ -127,7 +140,15 @@ CREATE TABLE assets_deleted(
   site_id TEXT,
   name TEXT,
   location TEXT,
-  archived INT
+  archived INT,
+  manufacturer TEXT,
+  model_number TEXT,
+  serial_number TEXT,
+  shutoff_instructions TEXT,
+  startup_instructions TEXT,
+  creation_time INT,
+  last_updated_time INT,
+  verification_instructions TEXT
 , deletion_time INTEGER, deletion_user_id TEXT);
 CREATE TABLE users_deleted(
   id TEXT,
@@ -177,7 +198,12 @@ CREATE TABLE sources_deleted(
   type TEXT,
   magnitude TEXT,
   locked INT,
-  archived INT
+  archived INT,
+  shutoff_instructions TEXT,
+  startup_instructions TEXT,
+  verification_instructions TEXT,
+  creation_time INT,
+  last_updated_time INT
 , deletion_time INTEGER, deletion_user_id TEXT);
 CREATE TABLE sources_assets_join_deleted(
   id INT,
@@ -208,37 +234,3 @@ CREATE TABLE files_deleted(
   source_id TEXT,
   time INT
 , deletion_time INTEGER, deletion_user_id TEXT);
-0|id|INTEGER|0||1
-1|user_id|TEXT|1||0
-2|incident_id|TEXT|1||0
-3|leader|INTEGER|1||0
-0|id|TEXT|0||1
-1|key|TEXT|1||0
-2|creator_id|TEXT|1||0
-3|site_id|TEXT|1||0
-4|name|TEXT|1||0
-5|location|TEXT|1||0
-6|archived|INTEGER|1||0
-7|manufacturer|TEXT|1||0
-8|model_number|TEXT|1||0
-9|serial_number|TEXT|1||0
-10|shutoff_instructions|TEXT|1||0
-11|startup_instructions|TEXT|1||0
-12|creation_time|INTEGER|1||0
-13|last_updated_time|INTEGER|1||0
-14|verification_instructions|TEXT|1||0
-0|id|TEXT|0||1
-1|key|TEXT|1||0
-2|creator_id|TEXT|1||0
-3|site_id|TEXT|1||0
-4|name|TEXT|1||0
-5|location|TEXT|1||0
-6|archived|INTEGER|1||0
-7|manufacturer|TEXT|1||0
-8|model_number|TEXT|1||0
-9|serial_number|TEXT|1||0
-10|shutoff_instructions|TEXT|1||0
-11|startup_instructions|TEXT|1||0
-12|creation_time|INTEGER|1||0
-13|last_updated_time|INTEGER|1||0
-14|verification_instructions|TEXT|1||0

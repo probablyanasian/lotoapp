@@ -5,34 +5,22 @@
 </head>
 <body>
     <div>
-        <p>Name: {{ source_info[0] }}<br>
-        Location: {{ source_info[1] }}<br>
-        Type: {{ source_info[2] }}
+        <p>Name: {{ source_info[0] }}</p>
+        <p>Location: {{ source_info[1] }}</p>
+        <p>Type: {{ source_info[2] }}</p>
         {% if source_info[3]|length > 0 %}
-            <br>Magnitude: {{ source_info[3] }}</p>
-        {% else %}
-            </p>
+            <p>Magnitude: {{ source_info[3] }}</p>
         {% endif %}
+        <p>Creation Time: {{ creation_time }}</p>
+        <p>Last Updated: {{ last_updated }}</p>
+        <br>
         <a href='startup/'>Startup Instructions</a><br>
         <a href='shutoff/'>Shutoff Instructions</a><br>
         <a href='verification/'>Verification Instructions</a><br><br>
-        {% if locked %}
-            <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
-            <br>
-            <form method="POST">
-                <input type="submit" value="unlock" name="toggle_lock">
-            </form>
-            <br>
-        {% else %}
-            <p style="display:inline">Status: </p><p style="color:red; display:inline;">Unlocked</p>
-            <br>
-            <form method="POST">
-                <input type="submit" value="lock" name="toggle_lock">
-            </form>
-            <br>
-        {% endif %}
         
         {% if is_manager %}
+            <br>
+                <a href="edit_source/">Edit Source</a>
             <br>
             <form method="POST">
                 <input type="submit" value="Remove Source from Asset" name="action">
@@ -47,6 +35,21 @@
         <br><a href="../../">Back to Asset: {{ asset_name }}</a>
     </div>
     <div>
+        {% if locked %}
+            <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
+            <br><br>
+            <form method="POST">
+                <input type="submit" value="unlock" name="toggle_lock">
+            </form>
+            <br>
+        {% else %}
+            <p style="display:inline">Status: </p><p style="color:red; display:inline;">Unlocked</p>
+            <br><br>
+            <form method="POST">
+                <input type="submit" value="lock" name="toggle_lock">
+            </form>
+            <br>
+        {% endif %}
         <p style="color: red;">Make sure you upload the right one.<br>Due to data retention, images can <em><b>not</b></em> be deleted.<br></p>
         <form method='POST' enctype='multipart/form-data'>
             <input type=file name=file><br>

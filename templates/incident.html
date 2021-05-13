@@ -5,12 +5,10 @@
 </head>
 <body>
     <div>
-        <p>Names</p>
-        <p>
+        <p>Names</p><br>
         {% for name in names %}
-            {{ name }}<br>
+            <p>{{ name }}</p>
         {% endfor %}
-        </p>
         {% if is_leader and not is_resolved %} 
         <br>
             <form method="POST">

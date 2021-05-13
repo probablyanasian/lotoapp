@@ -11,12 +11,15 @@
         {% if source_info[3]|length > 0 %}
             <p>Magnitude: {{ source_info[3] }}</p>
         {% endif %}
+        <p>Creation Time: {{ creation_time }}</p>
+        <p>Last Updated: {{ last_updated }}</p>
+        <br>
+        <a href='startup/'>Startup Instructions</a><br>
+        <a href='shutoff/'>Shutoff Instructions</a><br>
+        <a href='verification/'>Verification Instructions</a><br><br>
+        <br>
         {% if source_info[4] %}
             <p style="display:inline">Status: </p><p style="color:green; display: inline;">Locked</p>
-            <br>
-            <form method="POST">
-                <input type="submit" value="unlock" name="toggle_lock">
-            </form>
             <br>
             {% for user in users_list %}
                 <a href='user/{{ user[0] }}/'>
@@ -29,12 +32,10 @@
         {% else %}
             <p style="display:inline">Status: </p><p style="color:red; display:inline;">Unlocked</p>
             <br>
-            <form method="POST">
-                <input type="submit" value="lock" name="toggle_lock">
-            </form>
-            <br>
         {% endif %}
         {% if is_manager %}
+            <br>
+                <a href="edit_source/">Edit Source</a>
             <br>
             <form method="POST">
                 <label style="color: red;">Removes from <em>ALL</em> assets</label><br>

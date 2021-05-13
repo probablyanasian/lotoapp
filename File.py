@@ -28,3 +28,7 @@ def get_info_by_id(i_file_id: str) -> list:
 def get_files_by_ids(i_site_id: str, i_incident_id: str, i_user_id: str, i_source_id: str) -> list:
     return db_helper.fetch('SELECT id, fpath, time FROM files WHERE site_id = :site_id AND user_id = :user_id AND incident_id = :incident_id AND source_id = :source_id;',
     {'site_id': i_site_id, 'user_id': i_user_id, 'incident_id': i_incident_id, 'source_id': i_source_id})
+
+def incident_source_with_no_file(i_site_id: str) -> list:
+    #TODO: do this.
+    pass

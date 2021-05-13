@@ -21,8 +21,9 @@ def verify_exists(i_to_verif: dict, keys: list) -> bool:
         else:
             if not i_to_verif[key].strip():
                 return False
-            elif len(i_to_verif[key]) > 300:
-                return False
+            if key not in ['verif_ins', 'startup_ins', 'shutoff_ins']:
+                if len(i_to_verif[key]) > 350:
+                    return False
     return True
 
 @app.route('/', methods=['GET', 'POST'])
@@ -227,9 +228,11 @@ def base_view_asset(site_id, asset_id):
     else:
         incident_list = Incident.get_incidents_from_asset(asset_id)
         asset_info = Asset.get_info_from_id(asset_id)
+        creation_time = time.ctime(asset_info[8])
+        last_updated = time.ctime(asset_info[9])
         is_manager = Site.check_site_manager(verify[1], site_id)
         source_list = Source.get_info_from_asset(asset_id)
-        return render_template('asset.html', list_incidents=True, incident_list=incident_list, source_list=source_list, name=asset_info[0], location=asset_info[1], is_manager=is_manager)
+        return render_template('asset.html', list_incidents=True, incident_list=incident_list, source_list=source_list, asset_info=asset_info, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/new_asset/', methods=['GET', 'POST'], strict_slashes=False)
 def base_new_asset(site_id):
@@ -244,6 +247,7 @@ def base_new_asset(site_id):
 
     if request.method == 'POST':
         vals = request.form.to_dict()
+        print(vals)
         if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
             Asset.Asset(verify[1], site_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
             vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
@@ -450,14 +454,18 @@ def view_asset(site_id, incident_id, asset_id):
                     return redirect(url_for('view_incident', site_id=site_id, incident_id=incident_id))
                 else:
                     asset_info = Asset.get_info_from_id(asset_id)
+                    creation_time = time.ctime(asset_info[8])
+                    last_updated = time.ctime(asset_info[9])
                     is_manager = Site.check_site_manager(verify[1], site_id)
                     source_list = Source.get_info_from_asset_incident(verify[1], incident_id, asset_id)
-                    return render_template('incident_asset.html', source_list=source_list, name=asset_info[0], location=asset_info[1], is_manager=is_manager, message="Invalid Request")
+                    return render_template('incident_asset.html', asset_info=asset_info, source_list=source_list, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated, message="Invalid Request")
     else:
         asset_info = Asset.get_info_from_id(asset_id)
+        creation_time = time.ctime(asset_info[8])
+        last_updated = time.ctime(asset_info[9])
         is_manager = Site.check_site_manager(verify[1], site_id)
         source_list = Source.get_info_from_asset_incident(verify[1], incident_id, asset_id)
-        return render_template('incident_asset.html', source_list=source_list, name=asset_info[0], location=asset_info[1], is_manager=is_manager)
+        return render_template('incident_asset.html', asset_info=asset_info, source_list=source_list, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/add_source/', methods=['GET', 'POST'])
 def add_source(site_id, incident_id, asset_id):
@@ -504,10 +512,12 @@ def new_source(site_id, incident_id, asset_id):
 
 def generate_route_view_source_message(site_id, user_id, incident_id, asset_id, source_id, i_message):
     source_info = Source.get_info_from_id(source_id)[0] # name, location, type, magnitude
+    creation_time = time.ctime(source_info[9])
+    last_updated = time.ctime(source_info[10])
     asset_name = Asset.get_info_from_id(asset_id)[0]
     is_manager = Site.check_site_manager(user_id, site_id)
     locked = Source.get_user_locked_incident_source(user_id, incident_id, source_id)
-    return render_template('incident_source.html', source_info=source_info, asset_name=asset_name, locked=locked, is_manager=is_manager, message=i_message)
+    return render_template('incident_source.html', source_info=source_info, asset_name=asset_name, locked=locked, is_manager=is_manager, message=i_message, creation_time=creation_time, last_updated=last_updated)
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -556,13 +566,15 @@ def view_source(site_id, incident_id, asset_id, source_id):
             filename = secure_filename(file.filename)
             file_instance = File.File(file, app.config['UPLOAD_FOLDER'], site_id, incident_id, verify[1], source_id)
             return redirect(url_for('view_file', site_id=site_id, incident_id=incident_id, asset_id=asset_id, source_id=source_id, file_id=file_instance.id))
-        return redirect(url_for('view_source', site_id=site_id, incident_id=incident_id, asset_id=asset_id, source_id=source_id))
+        return redirect(request.url)
     else:
         source_info = Source.get_info_from_id(source_id)[0] # name, location, type, magnitude
+        creation_time = time.ctime(source_info[9])
+        last_updated = time.ctime(source_info[10])
         asset_name = Asset.get_info_from_id(asset_id)[0]
         is_manager = Site.check_site_manager(verify[1], site_id)
         locked = Source.get_user_locked_incident_source(verify[1], incident_id, source_id)
-        return render_template('incident_source.html', source_info=source_info, asset_name=asset_name, locked=locked, is_manager=is_manager)
+        return render_template('incident_source.html', source_info=source_info, asset_name=asset_name, locked=locked, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/source/<source_id>/view_files/', methods=['GET'], strict_slashes=False)
 def view_files(site_id, incident_id, asset_id, source_id):
@@ -601,10 +613,12 @@ def base_source(site_id, source_id):
                     return redirect(url_for('view_locked_sources', site_id=site_id))
     
     source_info = Source.get_info_from_id(source_id)[0] # name, location, type, magnitude, locked
+    creation_time = time.ctime(source_info[9])
+    last_updated = time.ctime(source_info[10])
     is_manager = Site.check_site_manager(verify[1], site_id)
     site_name = Site.get_info_from_id(source_info[5])[0]
     users_list = Source.get_users_status_from_source_ignore_resolved(source_id)
-    return render_template('source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager)
+    return render_template('source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/incident/<incident_id>/asset/<asset_id>/source/<source_id>/file/<file_id>', methods=['GET'], strict_slashes=False)
 def view_file(site_id, incident_id, asset_id, source_id, file_id):
@@ -707,11 +721,14 @@ def asset_source(site_id, asset_id, source_id):
                     Source.remove_source_from_asset(source_id, asset_id, verify[1])
     
     source_info = Source.get_info_from_id(source_id)[0] # name, location, type, magnitude, locked
+    creation_time = time.ctime(source_info[9])
+    last_updated = time.ctime(source_info[10])
     is_manager = Site.check_site_manager(verify[1], site_id)
     site_name = Site.get_info_from_id(source_info[5])[0]
     users_list = Source.get_users_status_from_source_ignore_resolved(source_id)
-    return render_template('source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager)
+    return render_template('asset_source.html', source_info=source_info, users_list=users_list, site_name=site_name, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
+@app.route('/site/<site_id>/source/<source_id>/startup/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/source/<source_id>/startup/', methods=['GET'], strict_slashes=False)
 def source_startup(site_id, filepath, source_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -724,8 +741,9 @@ def source_startup(site_id, filepath, source_id):
         return redirect(url_for('view_sites'))
     
     startup_ins = Source.get_info_from_id(source_id)[0][7]
-    return render_template('display_text.html', purpose="Shutoff Instructions", data=startup_ins)
+    return render_template('display_text.html', purpose="Startup Instructions", data=startup_ins)
 
+@app.route('/site/<site_id>/source/<source_id>/shutoff/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/source/<source_id>/shutoff/', methods=['GET'], strict_slashes=False)
 def source_shutdown(site_id, filepath, source_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -740,6 +758,7 @@ def source_shutdown(site_id, filepath, source_id):
     shutoff_ins = Source.get_info_from_id(source_id)[0][6]
     return render_template('display_text.html', purpose="Shutoff Instructions", data=shutoff_ins)
 
+@app.route('/site/<site_id>/source/<source_id>/verification/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/source/<source_id>/verification/', methods=['GET'], strict_slashes=False)
 def source_verification(site_id, filepath, source_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -752,8 +771,9 @@ def source_verification(site_id, filepath, source_id):
         return redirect(url_for('view_sites'))
 
     verif_ins = Source.get_info_from_id(source_id)[0][8]
-    return render_template('display_text.html', purpose="Shutoff Instructions", data=verif_ins)
+    return render_template('display_text.html', purpose="Verification Instructions", data=verif_ins)
 
+@app.route('/site/<site_id>/asset/<asset_id>/startup/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/asset/<asset_id>/startup/', methods=['GET'], strict_slashes=False)
 def asset_startup(site_id, filepath, asset_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -765,9 +785,10 @@ def asset_startup(site_id, filepath, asset_id):
     if not Site.check_valid_site_user(verify[1], site_id):
         return redirect(url_for('view_sites'))
     
-    startup_ins = Asset.get_info_from_id(asset_id)[0][7]
-    return render_template('display_text.html', purpose="Shutoff Instructions", data=startup_ins)
+    startup_ins = Asset.get_info_from_id(asset_id)[5]
+    return render_template('display_text.html', purpose="Startup Instructions", data=startup_ins)
 
+@app.route('/site/<site_id>/asset/<asset_id>/shutoff/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/asset/<asset_id>/shutoff/', methods=['GET'], strict_slashes=False)
 def asset_shutdown(site_id, filepath, asset_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -779,9 +800,10 @@ def asset_shutdown(site_id, filepath, asset_id):
     if not Site.check_valid_site_user(verify[1], site_id):
         return redirect(url_for('view_sites'))
     
-    shutoff_ins = Asset.get_info_from_id(asset_id)[0][6]
+    shutoff_ins = Asset.get_info_from_id(asset_id)[6]
     return render_template('display_text.html', purpose="Shutoff Instructions", data=shutoff_ins)
 
+@app.route('/site/<site_id>/asset/<asset_id>/verification/', methods=['GET'], strict_slashes=False, defaults={'filepath': None})
 @app.route('/site/<site_id>/<path:filepath>/asset/<asset_id>/verification/', methods=['GET'], strict_slashes=False)
 def asset_verification(site_id, filepath, asset_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -793,8 +815,58 @@ def asset_verification(site_id, filepath, asset_id):
     if not Site.check_valid_site_user(verify[1], site_id):
         return redirect(url_for('view_sites'))
 
-    verif_ins = Asset.get_info_from_id(asset_id)[0][8]
-    return render_template('display_text.html', purpose="Shutoff Instructions", data=verif_ins)
+    verif_ins = Asset.get_info_from_id(asset_id)[7]
+    return render_template('display_text.html', purpose="Verification Instructions", data=verif_ins)
+
+@app.route('/site/<site_id>/asset/<asset_id>/edit_asset/', methods=['GET', 'POST'], strict_slashes=False, defaults={'filepath': None})
+@app.route('/site/<site_id>/<path:filepath>/asset/<asset_id>/edit_asset/', methods=['GET', 'POST'], strict_slashes=False)
+def edit_asset(site_id, filepath, asset_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return redirect(url_for('view_sites'))
+
+    if request.method == 'POST':
+        vals = request.form.to_dict()
+        if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
+            Asset.update_by_id(asset_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
+            vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
+            return redirect(request.url.replace('edit_asset/', '').replace('edit_asset', ''))
+        else:
+            asset_info = Asset.get_info_from_id(asset_id)
+        return render_template('edit_asset.html', data=asset_info, message="Missing Parameter")
+
+    asset_info = Asset.get_info_from_id(asset_id)
+    return render_template('edit_asset.html', data=asset_info)
+
+@app.route('/site/<site_id>/source/<source_id>/edit_source/', methods=['GET', 'POST'], strict_slashes=False, defaults={'filepath': None})
+@app.route('/site/<site_id>/<path:filepath>/source/<source_id>/edit_source/', methods=['GET', 'POST'], strict_slashes=False)
+def edit_source(site_id, filepath, source_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return redirect(url_for('view_sites'))
+
+    if request.method == 'POST':
+        vals = request.form.to_dict()
+        if not verify_exists(vals, ['name', 'location', 'type', 'shutoff_ins', 'startup_ins', 'verif_ins']):
+            source_info = Source.get_info_from_id(source_id)
+            return render_template('edit_source.html', data=source_info, message='Missing Parameter')
+        if 'magnitude' not in vals:
+            vals['magnitude'] = ''
+        Source.update_by_id(source_id, vals['name'], vals['location'], vals['type'], vals['magnitude'], vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
+        request.url.replace('edit_source/', '').replace('edit_source', '')
+
+    source_info = Source.get_info_from_id(source_id)
+    return render_template('edit_source.html', data=source_info)
 
 @app.route('/css/<path:path>')
 def send_css(path):

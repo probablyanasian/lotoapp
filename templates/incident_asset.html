@@ -1,18 +1,41 @@
 <!DOCTYPE html>
 <head>
-    <title>Asset {{ name }}</title>
+    <title>Asset {{ asset_info[0] }}</title>
     <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
     <div>
-        <p>Name: {{ name }}<br>
-           Location: {{ location }}</p>
+        <p>Name: {{  asset_info[0] }}</p>
+        <p>Manufacturer: {{ asset_info[2] }}</p>
+        <p>Model #: {{ asset_info[3] }}</p>
+        <p>Serial #: {{ asset_info[4] }}</p>
+        <p>Location: {{ asset_info[1] }}</p><br>
+        <p>Creation Time: {{ creation_time }}</p>
+        <p>Last Updated: {{ last_updated }}</p>
+        <br>
         <a href='startup/'>Startup Instructions</a><br>
         <a href='shutoff/'>Shutoff Instructions</a><br>
         <a href='verification/'>Verification Instructions</a><br><br>
+        {% if is_manager %}
+            <br>
+                <a href="edit_asset/">Edit Asset</a>
+            <br>
+            <form method="POST">
+                <input type="submit" value="Remove Asset From Incident" name="action">
+            </form>
+            <br>
+            <form method="POST">
+                <input type="submit" value="Delete Asset" name="action">
+            </form>
+            <br>
+        {% endif %}
+        <br><a href="../../">Back to Incident</a>
+        <p style="color:red;">{{message}}</p>
+    </div>
+    <div>
         <a href='add_source/'>Add Source</a><br><br>
         <p style="color: red;">Checkmarks below are <em><b>not</b></em> enough to verify lockout.<br>Always test asset to ensure proper and correct lockout.</p>
-        <p>Lock Checkmarks: You, Source, Group</p>
+        <p>Lock Checkmarks: You, Source, Group</p><br>
         {% for source in source_list %}
             <a href='{{ 'source/'+source[0]+'/' }}'> 
                 <!--you source all-->
@@ -34,37 +57,5 @@
                 {{ source[1] }} at: {{ source[3] }}
             </a><br>
         {% endfor %}
-        {% if is_manager %}
-            <br>
-            <form method="POST">
-                <input type="submit" value="Remove Asset From Incident" name="action">
-            </form>
-            <br>
-            <br>
-            <form method="POST">
-                <input type="submit" value="Delete Asset" name="action">
-            </form>
-            <br>
-        {% endif %}
-        <p style="color:red;">{{message}}</p>
-        {% if list_incidents %}
-            <br><br><a href="../../">Back to Site {{ name }}</a>
-        {% else %}
-            <br><br><a href="../../">Back to Incident</a>
-        {% endif %}
     </div>
-    {% if list_incidents %}
-    {% if incident_list|length != 0 %}
-        <div>
-            <p>Incidents</p>
-            {% for item in incident_list %}
-                <a href='{{ '../../incident/'+item[0]+'/' }}'> {{ item[1] }} </a><br>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div>
-            <p> No Incidents </p><br>
-        </div>
-    {% endif %}
-    {% endif %}
 </body>

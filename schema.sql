@@ -208,3 +208,37 @@ CREATE TABLE files_deleted(
   source_id TEXT,
   time INT
 , deletion_time INTEGER, deletion_user_id TEXT);
+0|id|INTEGER|0||1
+1|user_id|TEXT|1||0
+2|incident_id|TEXT|1||0
+3|leader|INTEGER|1||0
+0|id|TEXT|0||1
+1|key|TEXT|1||0
+2|creator_id|TEXT|1||0
+3|site_id|TEXT|1||0
+4|name|TEXT|1||0
+5|location|TEXT|1||0
+6|archived|INTEGER|1||0
+7|manufacturer|TEXT|1||0
+8|model_number|TEXT|1||0
+9|serial_number|TEXT|1||0
+10|shutoff_instructions|TEXT|1||0
+11|startup_instructions|TEXT|1||0
+12|creation_time|INTEGER|1||0
+13|last_updated_time|INTEGER|1||0
+14|verification_instructions|TEXT|1||0
+0|id|TEXT|0||1
+1|key|TEXT|1||0
+2|creator_id|TEXT|1||0
+3|site_id|TEXT|1||0
+4|name|TEXT|1||0
+5|location|TEXT|1||0
+6|archived|INTEGER|1||0
+7|manufacturer|TEXT|1||0
+8|model_number|TEXT|1||0
+9|serial_number|TEXT|1||0
+10|shutoff_instructions|TEXT|1||0
+11|startup_instructions|TEXT|1||0
+12|creation_time|INTEGER|1||0
+13|last_updated_time|INTEGER|1||0
+14|verification_instructions|TEXT|1||0

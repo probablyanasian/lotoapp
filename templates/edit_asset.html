@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+    <title>Edit Asset</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="text" value="{{ data[0] }}" placeholder="Name" name="name"><br>
+            <input type="text" value="{{ data[2] }}" class="text" placeholder="Manufacturer" name="manu"><br>
+            <input type="text" value="{{ data[3] }}" class="text" placeholder="Model Number" name="model_num"><br>
+            <input type="text" value="{{ data[4] }}" class="text" placeholder="Serial Number" name="serial_num"><br>
+            <input type="text" value="{{ data[1] }}" placeholder="Location" name="location"><br><p class='br'></p>
+            <label style='color: red;'>Be specific. Instructions should also be written/copied into the sources.</label><br>
+            <label>Shutoff Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Shutoff Instructions" name="shutoff_ins">{{ data[5] }}</textarea><br>
+            <label>Startup Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Startup Instructions" name="startup_ins">{{ data[6] }}</textarea><br>
+            <label>Verification Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Verification Instructions" name="verif_ins">{{ data[7] }}</textarea><br>
+            <input type="submit" value="Submit"><br>
+        </form>
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../view_assets">Back</a>
+    </div>
+</body>
+
+<script type="text/javascript">
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+    tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+    tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+    this.style.height = "auto";
+    this.style.height = (this.scrollHeight) + "px";
+    }
+</script>

@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <head>
-    <title>Asset {{ name }}</title>
+    <title>Asset {{ asset_info[0] }}</title>
     <link rel="stylesheet" href="/css/base.css">
 </head>
 <body>
     <div>
-        <p>Location: {{ location }}</p>
+        <p>Name: {{  asset_info[0] }}</p>
+        <p>Manufacturer: {{ asset_info[2] }}</p>
+        <p>Model #: {{ asset_info[3] }}</p>
+        <p>Serial #: {{ asset_info[4] }}</p>
+        <p>Location: {{ asset_info[1] }}</p><br>
+        <p>Creation Time: {{ creation_time }}</p>
+        <p>Last Updated: {{ last_updated }}</p>
+        <br>
         <a href='startup/'>Startup Instructions</a><br>
         <a href='shutoff/'>Shutoff Instructions</a><br>
         <a href='verification/'>Verification Instructions</a><br><br>
@@ -22,6 +29,8 @@
             </a><br>
         {% endfor %}
         {% if is_manager %}
+            <br>
+                <a href="edit_asset/">Edit Asset</a>
             <br>
             <form method="POST">
                 <input type="submit" value="Delete Asset" name="action">

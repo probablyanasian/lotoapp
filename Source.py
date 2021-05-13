@@ -15,12 +15,18 @@ class Source:
         {'id': self.id, 'site_id': i_site, 'creator_id': i_user_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'locked': i_locked, 'archived': 0,
         'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time())})
 
+def update_by_id(i_source_id: str, i_name: str, i_location: str, i_type: str, i_magnitude: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
+    db_helper.execute('UPDATE sources SET name = :name, location = :location, type = :type, magnitude = :magnitude, shutoff_instructions = :shutoff_instructions, ' + 
+    'startup_instruction = :startup_instructions, verification_instructions = :verification_instructions, last_updated_time = :last_updated_time WHERE id = :source_id',
+    {'source_id': i_source_id, 'name': i_name, 'location': i_location, 'type': i_type, 'magnitude': i_magnitude, 'shutoff_instructions': i_shutoff_ins,
+    'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'last_updated_time': int(time.time())})
+
 def get_locked_sources_from_site(i_site_id: str):
     return db_helper.fetch('SELECT id, name, location FROM sources WHERE site_id = :site_id AND locked = 1;',
     {'site_id': i_site_id})
 
 def get_info_from_id(i_source_id: str) -> list:
-    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id, shutoff_instructions, startup_instructions, verification_instructions FROM sources WHERE id = :source_id;',
+    return db_helper.fetch('SELECT name, location, type, magnitude, locked, site_id, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time FROM sources WHERE id = :source_id;',
     {'source_id': i_source_id})
 
 def get_sources_from_asset(i_asset_id: str) -> list:
@@ -95,7 +101,7 @@ def get_user_was_locked(i_user_id: str, i_incident_id: str, i_source_id: str) ->
     return False 
 
 def update_user_locked(i_user_id: str, i_incident_id: str, i_source_id: str, i_locked: int) -> None:
-    if not Incident.is_resolved(i_incident_id):
+    if not Incident.is_resolved(i_incident_id) or get_user_locked_incident_source(i_user_id, i_incident_id, i_source_id):
         if i_locked and not get_user_was_locked(i_user_id, i_incident_id, i_source_id):
             db_helper.execute('UPDATE users_incidents_sources_join SET locked = :locked, was_locked = :locked, initial_lock_time = :cur_time WHERE user_id = :user_id AND incident_id = :incident_id AND source_id = :source_id;',
             {'user_id': i_user_id, 'incident_id': i_incident_id, 'source_id': i_source_id, 'locked': i_locked, 'cur_time': int(time.time())})

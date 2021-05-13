@@ -15,12 +15,19 @@ class Asset:
         'manufacturer': i_manu, 'model_number': i_model, 'serial_number': i_serial_num, 'shutoff_instructions': i_shutoff_ins,
         'startup_instructions': i_startup_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time()), 'verification_instructions': i_verif_ins})
 
+def update_by_id(i_asset_id: str, i_name: str, i_location: str, i_manu: str, i_model: str, i_serial_num: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
+    db_helper.execute('UPDATE assets SET name = :name, location = :location, manufacturer = :manufacturer, model_number = :model_number, ' + 
+    'serial_number = :serial_number, shutoff_instructions = :shutoff_instructions, startup_instructions = :startup_instructions, ' + 
+    'verification_instructions = :verification_instructions, last_updated_time = :last_updated_time WHERE id = :asset_id',
+    {'asset_id': i_asset_id, 'name': i_name, 'location': i_location, 'manufacturer': i_manu, 'model_number': i_model, 'serial_number': i_serial_num,
+    'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'last_updated_time': int(time.time())})
+
 def regenKey(i_id: str) -> None:
     key = custom_utils.random_id(32)
     db_helper.execute("UPDATE assets SET key = :key WHERE id = :id;", {'id': i_id, 'key': key})
 
 def get_info_from_id(i_asset_id: str) -> tuple:
-    return db_helper.fetch('SELECT name, location FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})[0]
+    return db_helper.fetch('SELECT name, location, manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})[0]
 
 # def insert_asset_to_incident(i_asset_id: str, i_incident_id: str, i_name: str) -> None:
 #     db_helper.execute('INSERT INTO incidents_assets_join (incident_id, asset_id, name) VALUES (:incident_id, :asset_id, :name);', 

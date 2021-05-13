@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+    <title>Edit Source</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="text" value="{{ data[0] }}" placeholder="Name" name="name"><br>
+            <input type="text" value="{{ data[1] }}" placeholder="Location" name="location"><br>
+            <input type="text" value="{{ data[2] }}" placeholder="Type" name="type"><br>
+            <input type="text" value="{{ data[3] }}" placeholder="Optional: Magnitude" name="magnitude"><br>
+            <label>Shutoff Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Shutoff Instructions" name="shutoff_ins">{{ data[6] }}</textarea><br>
+            <label>Startup Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Startup Instructions" name="startup_ins">{{ data[7] }}</textarea><br>
+            <label>Verification Instructions:</label><br>
+            <textarea type="text" class="text" placeholder="Verification Instructions" name="verif_ins">{{ data[8] }}</textarea><br>
+            <!-- <label for="locked">Locked: </label>
+            <input type="checkbox" value="locked" style="width: 5rem;" placeholder="locked" name="locked"><br> -->
+            <input type="submit" value="Submit"><br>
+        </form>
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>
+
+<script type="text/javascript">
+    const tx = document.getElementsByTagName("textarea");
+    for (let i = 0; i < tx.length; i++) {
+    tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+    tx[i].addEventListener("input", OnInput, false);
+    }
+
+    function OnInput() {
+    this.style.height = "auto";
+    this.style.height = (this.scrollHeight) + "px";
+    }
+</script>

@@ -33,6 +33,8 @@ def check_is_leader(i_user_id: str, i_incident_id: str) -> bool:
 def resolve(i_incident_id: str) -> None:
     db_helper.execute('UPDATE incidents SET resolved = :resolved WHERE id = :incident_id;',
     {'incident_id': i_incident_id, 'resolved': 1})
+    db_helper.execute('UPDATE users_incidents_sources_join SET locked = :locked, final_unlock_time = :cur_time WHERE incident_id = :incident_id',
+            {'incident_id': i_incident_id, 'cur_time': int(time.time()), 'locked': 0})
 
 def is_resolved(i_incident_id: str) -> bool:
     res = db_helper.fetch('SELECT resolved FROM incidents WHERE id = :incident_id;',

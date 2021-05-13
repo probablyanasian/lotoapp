@@ -77,3 +77,12 @@ def get_users_names_from_incident(i_incident_id: str) -> list:
 def fake_del_user(i_user_id: str) -> None:
     db_helper.execute('UPDATE users SET uname = :uname, pass = :pass, archived = :arc WHERE id = :user_id;',
     {'uname': custom_utils.random_id(32), 'pass': pbkdf2_sha256.hash(custom_utils.random_id(32)), 'arc': 1})
+
+def get_users_info_from_site(i_site_id: str) -> list:
+    user_id_tup_list = db_helper.fetch('SELECT user_id FROM sites_users_join WHERE site_id = :site_id;',
+    {'site_id': i_site_id})
+    retval = []
+    for user_id_tup in user_id_tup_list:
+        info_tup = get_info_from_id(user_id_tup[0])[0]
+        retval.append([user_id_tup[0], *info_tup])
+    return retval

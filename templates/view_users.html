@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<head>
+    <title>View Users</title>
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+    <div>
+        {% for user_info in user_info_list %}
+            <a href='{{ 'user/'+user_info[0]+'/' }}'>{{ user_info[1] }} {{ user_info[2] }}</a><br>
+        {% endfor %}
+        <p style="color:red;">{{message}}</p>
+        <br><br><a href="../">Back</a>
+    </div>
+</body>

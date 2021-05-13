@@ -22,12 +22,12 @@
             <p>User is not a manager of this site.</p>
         {% endif %}
         {% if is_manager %}
-            <br>
-                <form method="POST">
-                    <input type="submit" value="Remove User" name="action">
-                </form>
-            <br>
             {% if not is_user_manager %}
+                <br>
+                    <form method="POST">
+                        <input type="submit" value="Remove User" name="action">
+                    </form>
+                <br>
                 <br>
                     <form method="POST">
                         <label style="color: red;">THIS IS AN IRREVERSABLE CHANGE</label><br>
@@ -37,6 +37,6 @@
             {% endif %}
         {% endif %}
         <p style="color:red;">{{message}}</p><br>
-        <a href="../../">Back to Source</a>
+        <a href="../../">Back</a>
     </div>
 </body>

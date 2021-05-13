@@ -637,6 +637,20 @@ def serve_file(site_id, incident_id, asset_id, source_id, file_id):
     return send_from_directory(filepath,
                                file_id)
 
+@app.route('/site/<site_id>/view_users/', methods=['GET'], strict_slashes=False)
+def view_users(site_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return redirect(url_for('view_sites'))
+    
+    user_list = User.get_users_info_from_site(site_id)
+    return render_template('view_users.html', user_info_list=user_list)
+
 @app.route('/site/<site_id>/<path:filepath>/user/<user_id>/', methods=['GET', 'POST'], strict_slashes=False)
 def show_user(site_id, filepath, user_id):
     verify = User.validate_token(request.cookies.get('token'))
@@ -654,11 +668,16 @@ def show_user(site_id, filepath, user_id):
     if request.method == 'POST':
         vals = request.form.to_dict()
         if Site.check_site_manager(verify[1], site_id):
-            if verify_exists(vals, ['action']):
-                if vals['action'] == 'Remove User':
-                    Site.remove_user(user_id, site_id, verify[1])
-                if vals['action'] == "Make User Manager":
-                    Site.make_manager(user_id, site_id)
+            if not Site.check_site_manager(user_id, site_id):
+                if verify_exists(vals, ['action']):
+                    if vals['action'] == 'Remove User':
+                        Site.remove_user(user_id, site_id, verify[1])
+                    if vals['action'] == "Make User Manager":
+                        Site.make_manager(user_id, site_id)
+        is_user_manager = Site.check_site_manager(user_id, site_id)
+        user_info = User.get_info_from_id(user_id)[0]
+        is_manager = Site.check_site_manager(verify[1], site_id)
+        return render_template('user.html', info=user_info, is_manager=is_manager, user_id=user_id, is_user_manager=is_user_manager, message="Invalid Operation")
     is_user_manager = Site.check_site_manager(user_id, site_id)
     user_info = User.get_info_from_id(user_id)[0]
     is_manager = Site.check_site_manager(verify[1], site_id)

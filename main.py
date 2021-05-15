@@ -868,7 +868,7 @@ def edit_source(site_id, filepath, source_id):
             vals['magnitude'] = ''
         vals['private'] = 0 if 'private' not in vals else 1
         Source.update_by_id(source_id, vals['name'], vals['location'], vals['type'], vals['magnitude'], vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'], vals['private'])
-        request.url.replace('edit_source/', '').replace('edit_source', '')
+        return redirect(request.url.replace('edit_source/', '').replace('edit_source', ''))
 
     source_info = Source.get_info_from_id(source_id)[0]
     return render_template('edit_source.html', data=source_info)

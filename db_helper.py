@@ -39,7 +39,7 @@ def close_connection() -> None:
 
 def setup_db() -> None:
     tables = ['sites', 'assets', 'users', 'tokens', 'sites_users_join', 'incidents', 'users_incidents_join',
-        'sources', 'sources_assets_join', 'users_incidents_sources_join', 'incidents_assets_join', 'files']
+        'sources', 'sources_assets_join', 'users_incidents_sources_join', 'incidents_assets_join', 'files', 'flow_assets', 'flow_asset_records']
     for table in tables:
         cursor.execute(f'DROP TABLE IF EXISTS {table};')
     # cursor.execute('DROP TABLE IF EXISTS sites;')
@@ -151,7 +151,15 @@ def setup_db() -> None:
         creation_time INTEGER NOT NULL,
         last_updated_time INTEGER NOT NULL,
         verification_instructions TEXT NOT NULL,
+        type TEXT NOT NULL,
         FOREIGN KEY (site_id) REFERENCES sites(id)
+        );
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS flow_assets (
+            id TEXT PRIMARY KEY,
+            asset_id TEXT REFERENCES assets(id)
+            
         );
     """)
     cursor.execute("""

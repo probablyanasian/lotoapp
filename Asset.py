@@ -3,31 +3,31 @@ import db_helper
 import custom_utils
 
 class Asset:
-    def __init__(self, i_creator: str, i_site: str, i_name: str, i_location: str, i_manu: str, i_model: str, i_serial_num: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
+    def __init__(self, i_creator: str, i_site: str, i_name: str, i_location: str, i_manu: str, i_model: str, i_serial_num: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str, i_type: str) -> None:
         self.id = custom_utils.random_id(32)
         self.key = custom_utils.random_id(32)
 
         db_helper.execute('INSERT INTO assets (id, key, creator_id, site_id, name, location, archived, ' + 
-        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions' +
+        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, type' +
         ') VALUES (:id, :key, :creator_id, :site_id, :name, :location, :archived, ' +
-        ':manufacturer, :model_number, :serial_number, :shutoff_instructions, :startup_instructions, :creation_time, :last_updated_time, :verification_instructions);', 
+        ':manufacturer, :model_number, :serial_number, :shutoff_instructions, :startup_instructions, :creation_time, :last_updated_time, :verification_instructions, :type);', 
         {'id': self.id, 'key': self.key, 'creator_id': i_creator, 'site_id': i_site, 'name': i_name, 'location': i_location, 'archived': 0,
         'manufacturer': i_manu, 'model_number': i_model, 'serial_number': i_serial_num, 'shutoff_instructions': i_shutoff_ins,
-        'startup_instructions': i_startup_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time()), 'verification_instructions': i_verif_ins})
+        'startup_instructions': i_startup_ins, 'creation_time': int(time.time()), 'last_updated_time': int(time.time()), 'verification_instructions': i_verif_ins, 'type': i_type})
 
-def update_by_id(i_asset_id: str, i_name: str, i_location: str, i_manu: str, i_model: str, i_serial_num: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str) -> None:
+def update_by_id(i_asset_id: str, i_name: str, i_location: str, i_manu: str, i_model: str, i_serial_num: str, i_shutoff_ins: str, i_startup_ins: str, i_verif_ins: str, i_type: str) -> None:
     db_helper.execute('UPDATE assets SET name = :name, location = :location, manufacturer = :manufacturer, model_number = :model_number, ' + 
     'serial_number = :serial_number, shutoff_instructions = :shutoff_instructions, startup_instructions = :startup_instructions, ' + 
-    'verification_instructions = :verification_instructions, last_updated_time = :last_updated_time WHERE id = :asset_id',
+    'verification_instructions = :verification_instructions, :type = type, last_updated_time = :last_updated_time WHERE id = :asset_id',
     {'asset_id': i_asset_id, 'name': i_name, 'location': i_location, 'manufacturer': i_manu, 'model_number': i_model, 'serial_number': i_serial_num,
-    'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'last_updated_time': int(time.time())})
+    'shutoff_instructions': i_shutoff_ins, 'startup_instructions': i_startup_ins, 'verification_instructions': i_verif_ins, 'type': i_type, 'last_updated_time': int(time.time())})
 
 def regenKey(i_id: str) -> None:
     key = custom_utils.random_id(32)
     db_helper.execute("UPDATE assets SET key = :key WHERE id = :id;", {'id': i_id, 'key': key})
 
 def get_info_from_id(i_asset_id: str) -> tuple:
-    return db_helper.fetch('SELECT name, location, manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, verification_instructions, creation_time, last_updated_time FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})[0]
+    return db_helper.fetch('SELECT name, location, manufacturer, model_number, serial_number, startup_instructions, shutoff_instructions, verification_instructions, creation_time, last_updated_time, type FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})[0]
 
 # def insert_asset_to_incident(i_asset_id: str, i_incident_id: str, i_name: str) -> None:
 #     db_helper.execute('INSERT INTO incidents_assets_join (incident_id, asset_id, name) VALUES (:incident_id, :asset_id, :name);', 
@@ -54,10 +54,10 @@ def get_assets_from_site_not_match_incident(i_site_id: str, i_incident_id: str) 
 
 def delete_asset(i_user_id: str, i_asset_id: str) -> None:
     db_helper.execute('INSERT INTO assets_deleted (id, key, creator_id, site_id, name, location, archived, '
-        + 'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, '
+        + 'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, type, '
         + 'deletion_time, deletion_user_id)' +
         f'SELECT id, key, creator_id, site_id, name, location, archived, ' + 
-        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, ' + 
+        'manufacturer, model_number, serial_number, shutoff_instructions, startup_instructions, creation_time, last_updated_time, verification_instructions, type, ' + 
         ':time, :del_uid FROM assets WHERE id = :asset_id;',
         {'time': int(time.time()), 'del_uid': i_user_id, 'asset_id': i_asset_id})
     db_helper.execute('DELETE FROM assets WHERE id = :asset_id;', {'asset_id': i_asset_id})

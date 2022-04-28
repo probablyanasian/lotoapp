@@ -29,6 +29,17 @@
                 {{ source[1] }} at: {{ source[3] }}
             </a><br>
         {% endfor %}
+        <br>
+        {% if asset_info[10] == "Flow Meter" %}
+            <p>Click to delete:</p>
+            {% for flow_asset in flow_assets %}
+                <a href='{{ 'delete_flow_asset/'+ flow_asset[0]|string +'/' }}'>
+                    {{ flow_asset[4] }} {{ flow_asset[2] }}(s) at {{ flow_asset[3] }} gal/s each. 
+                </a><br>
+            {% endfor %}
+            <br>
+            <a href='new_flow_asset/'>Add Flow Asset</a><br><br>
+        {% endif %}
         {% if is_manager %}
             <br>
                 <a href="edit_asset/">Edit Asset</a>

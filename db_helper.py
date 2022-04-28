@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import sqlite3
@@ -152,15 +154,26 @@ def setup_db() -> None:
         last_updated_time INTEGER NOT NULL,
         verification_instructions TEXT NOT NULL,
         type TEXT NOT NULL,
+        pipe_dia REAL,
         FOREIGN KEY (site_id) REFERENCES sites(id)
         );
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS flow_assets (
-            id TEXT PRIMARY KEY,
-            asset_id TEXT REFERENCES assets(id)
-            
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            asset_id TEXT REFERENCES assets(id),
+            type TEXT,
+            nom_flow_rate REAL,
+            expected_duration REAL,
+            quantity INTEGER
         );
+    """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS flow_asset_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            asset_id TEXT REFERENCES assets(id),
+            flow_rate REAL
+        )
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS sources (

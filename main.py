@@ -6,6 +6,7 @@ import Site
 import User
 import Incident
 import Asset
+import FlowAsset
 import Source
 import File
 from flask import Flask, request, render_template, send_from_directory, redirect, url_for, make_response
@@ -236,7 +237,9 @@ def base_view_asset(site_id, asset_id):
         last_updated = time.ctime(asset_info[9])
         is_manager = Site.check_site_manager(verify[1], site_id)
         source_list = Source.get_info_from_asset(asset_id)
-        return render_template('asset.html', list_incidents=True, incident_list=incident_list, source_list=source_list, asset_info=asset_info, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
+        flow_assets = FlowAsset.get_info_from_asset(asset_id)
+        print(flow_assets)
+        return render_template('asset.html', list_incidents=True, incident_list=incident_list, source_list=source_list, asset_info=asset_info, flow_assets=flow_assets, is_manager=is_manager, creation_time=creation_time, last_updated=last_updated)
 
 @app.route('/site/<site_id>/new_asset/', methods=['GET', 'POST'], strict_slashes=False)
 def base_new_asset(site_id):
@@ -251,9 +254,9 @@ def base_new_asset(site_id):
 
     if request.method == 'POST':
         vals = request.form.to_dict()
-        if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins']):
+        if verify_exists(vals, ['name', 'location', 'manu', 'model_num', 'serial_num', 'shutoff_ins', 'startup_ins', 'verif_ins', 'type']):
             Asset.Asset(verify[1], site_id, vals['name'], vals['location'], vals['manu'], vals['model_num'], vals['serial_num'],
-            vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'])
+            vals['shutoff_ins'], vals['startup_ins'], vals['verif_ins'], vals['type'])
             return redirect(url_for('view_assets', site_id=site_id))
         else:
             return render_template('new_asset.html', message='Missing Parameter')
@@ -281,6 +284,42 @@ def base_add_source(site_id, asset_id):
     else:
         source_list = Source.get_source_from_site_not_match_asset(site_id, asset_id)
         return render_template('add_source.html', source_list=source_list)
+
+@app.route('/site/<site_id>/asset/<asset_id>/new_flow_asset', methods=['GET', 'POST'], strict_slashes=False)
+def base_add_flow_asset(site_id, asset_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return make_response(redirect(url_for('view_sites')))
+
+    if request.method == 'POST':
+        vals = request.form.to_dict()
+        if verify_exists(vals, ['type', 'nom_flow_rate', 'quantity']):
+            FlowAsset.FlowAsset(asset_id, vals['type'], vals['nom_flow_rate'], vals['quantity'], vals['duration'] if vals['duration'] else None)
+            return redirect(url_for('base_view_asset', site_id=site_id, asset_id=asset_id))
+        else:
+            return render_template('new_flow_asset.html', message='Missing Parameter')
+    else:
+        source_list = Source.get_source_from_site_not_match_asset(site_id, asset_id)
+        return render_template('new_flow_asset.html')
+
+@app.route('/site/<site_id>/asset/<asset_id>/delete_flow_asset/<flow_asset_id>/', methods=['GET', 'POST'], strict_slashes=False)
+def delete_flow_asset(site_id, asset_id, flow_asset_id):
+    verify = User.validate_token(request.cookies.get('token'))
+    if not verify[0]:
+        resp = make_response(redirect(url_for('login')))
+        resp.set_cookie('token', '', expires=0)
+        return resp
+    
+    if not Site.check_valid_site_user(verify[1], site_id):
+        return make_response(redirect(url_for('view_sites')))
+
+    FlowAsset.delete_flow_asset(asset_id, flow_asset_id)
+    return redirect(url_for('base_view_asset', site_id=site_id, asset_id=asset_id))
 
 def handle_new_source(i_site_id: str, i_user_id: str, i_asset_id: str, i_vals: dict) -> tuple:
     if not verify_exists(i_vals, ['name', 'location', 'type', 'shutoff_ins', 'startup_ins', 'verif_ins']):
